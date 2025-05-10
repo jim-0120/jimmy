@@ -1,0 +1,255 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>資料科學學生 - 洪偉峻</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body class="is-preload">
+
+<!-- Sidebar -->
+<section id="sidebar">
+    <div class="inner">
+        <nav>
+            <ul>
+                <li><a href="#intro"><h2>歡迎</h2></a></li>
+                <li><a href="#one"><h2>關於我</h2></a></li>
+                <li><a href="#two"><h2>網爬結果</h2></a></li>
+                <li><a href="#three"><h2>聯絡我</h2></a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Intro -->
+    <section id="intro" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>洪偉峻</h1>
+            <p>靜宜大學資料科學系學生，有資料分析、推薦系統開發的經驗<br />擅長 Python、Java 及 SQL</p>
+        </div>
+    </section>
+
+    <!-- One -->
+    <section id="one" class="wrapper style2 spotlights">
+        <section>
+            <a href="#" class="image"><img src="https://png.pngtree.com/thumb_back/fh260/background/20220215/pngtree-self-introduction-of-school-supplies-promotion-and-discount-poster-at-the-image_980129.jpg" alt="" data-position="center center" /></a>
+            <div class="content">
+                <div class="inner">
+                    <h2>關於我</h2>
+                    <p>我目前就讀靜宜大學資料科學系，專注於學習資料處理、分析與推薦系統開發。透過 Python、Java 以及 SQL，進行資料驅動的決策分析。</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <a href="#" class="image"><img src="https://png.pngtree.com/png-vector/20250205/ourmid/pngtree-soft-skills-development-programs-featuring-3d-icon-isolated-on-a-transparent-png-image_15381402.png" alt="" data-position="top center" /></a>
+            <div class="content">
+                <div class="inner">
+                    <h2>技能</h2>
+                    <p>精通 Python 資料處理與建模，熟悉 SQL 資料庫查詢與管理，擅長使用 Java 開發應用程式。</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <a href="#" class="image"><img src="https://png.pngtree.com/png-clipart/20231020/original/pngtree-american-baseball-player-pitcher-png-image_13376423.png" alt="" data-position="25% 25%" /></a>
+            <div class="content">
+                <div class="inner">
+                    <h2>興趣</h2>
+                    <p>我對資料分析及棒球有濃厚興趣，喜歡從數據中發現有趣的資訊並了解其中的差異。</p>
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <!-- Two -->
+    <section id="two" class="wrapper style3 fade-up">
+        <div class="inner">
+            <h2>網爬結果</h2>
+            <p>以下是使用 Selenium 爬取 MLB 2025 年自由球員的相關資料。</p>
+            <div class="features">
+                <section>
+                    <h3>爬蟲程式與說明</h3>
+
+                    <!-- 第一段 -->
+                    <h4>第一段：載入模組與設定瀏覽器</h4>
+                    <pre>
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
+import time
+                    </pre>
+                    <p><strong>說明：</strong>這一段負責準備工作，先載入所需的 Python 模組：</p>
+                    <ul>
+                        <li>selenium：用來模擬自動化操作瀏覽器。</li>
+                        <li>webdriver_manager：自動安裝與配置 ChromeDriver。</li>
+                        <li>pandas：用來儲存與處理資料。</li>
+                        <li>time：為程式提供暫停功能，等待網頁載入。</li>
+                    </ul>
+
+                    <!-- 第二段 -->
+                    <h4>第二段：啟動瀏覽器並開啟目標網站</h4>
+                    <pre>
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")
+options.add_argument("--disable-gpu")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-blink-features=AutomationControlled")
+options.add_argument("user-agent=Mozilla/5.0 (...) Safari/537.36")
+
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+url = "https://www.spotrac.com/mlb/free-agents/_/year/2025"
+driver.get(url)
+time.sleep(5)
+                    </pre>
+                    <p><strong>說明：</strong>這一段是啟動瀏覽器，並開啟目標網站。</p>
+                    <ul>
+                        <li>透過 webdriver.Chrome 啟動瀏覽器並載入目標網址</li>
+                        <li>time.sleep(5) 是為了讓瀏覽器有時間載入 JavaScript 渲染的表格資料，若太快抓會抓不到東西</li>
+                    </ul>
+					
+                    <!-- 第三段 -->
+                    <h4>第三段：抓取表格資料並儲存到清單</h4>
+                    <pre>
+data_list = []
+rows = driver.find_elements(By.CSS_SELECTOR, 'tbody tr')
+
+for row in rows:
+    cols = row.find_elements(By.TAG_NAME, 'td')
+    if len(cols) >= 7:
+        data = {
+            "Player": cols[0].text.strip(),
+            "Position": cols[1].text.strip(),
+            "Age": cols[2].text.strip(),
+            "Team": cols[3].text.strip(),
+            "2025 AAV": cols[4].text.strip(),
+            "Free Agent Type": cols[5].text.strip(),
+            "2024 Salary": cols[6].text.strip(),
+        }
+        data_list.append(data)
+        print(data)
+                    </pre>
+                    <p><strong>說明：</strong>這一段是資料抓取的核心邏輯，從表格中解析出球員資料並儲存。</p>
+                    <ul>
+                        <li>建立 data_list，用來儲存每筆球員資料</li>
+                        <li>用 find_elements(By.CSS_SELECTOR, 'tbody tr') 找到所有資料列</li>
+                        <li>用 find_elements(By.CSS_SELECTOR, 'tbody tr') 找到所有資料列</li>
+                        <li>最後把這筆資料加入清單 data_list，同時印出來方便確認</li>
+                    </ul>
+                    <!-- 第四段 -->
+                    <h4>第四段：關閉瀏覽器並儲存為 CSV</h4>
+                    <pre>
+driver.quit()
+
+df = pd.DataFrame(data_list)
+df.to_csv("spotrac_mlb_free_agents_2025.csv", index=False, encoding="utf-8-sig")
+print("資料儲存：spotrac_mlb_free_agents_2025.csv")
+                    </pre>
+                    <p><strong>說明：</strong>這一段將資料儲存為 CSV 檔案並關閉瀏覽器。</p>
+                    <ul>
+                        <li>pd.DataFrame(data_list)：將剛剛的資料清單轉換成 Pandas 表格格式，方便儲存與分析</li>
+                        <li>.to_csv(...)：把 DataFrame 寫入 CSV 檔案</li>
+                        <li>最後印出訊息，確認資料已正確儲存</li>
+                    </ul>
+                    <h3> 結果資料圖 <br />  </h3>
+                    <img src="1..jpg" alt="MLB Free Agents Screenshot" width="450">
+					<p> 總共151筆結果</p>
+					<div>
+						<h3> 原始資料連結與爬蟲結果</h3>
+							<p>
+								<a href="spotrac_mlb_free_agents_2025.csv" download> 網爬結果 CSV 檔案</a><br />
+								<a href="https://www.spotrac.com/mlb/free-agents/_/year/2025" target="_blank">Spotrac 自由球員原始網頁</a><br />
+								<a href="網爬程式4.py" target="_blank">網爬程式</a><br />
+							</p>
+							
+
+					</div>
+				
+				
+            </div>
+        </div>
+    </section>
+
+    <!-- Three -->
+    <section id="three" class="wrapper style1 fade-up">
+        <div class="inner">
+            <h2>聯絡我</h2>
+            <p>如果你有任何問題或想進一步了解我的專案，歡迎與我聯繫！</p>
+            <div class="split style1">
+                <section>
+                    <form method="post" action="#">
+                        <div class="fields">
+                            <div class="field half">
+                                <label for="name">姓名</label>
+                                <input type="text" name="name" id="name" />
+                            </div>
+                            <div class="field half">
+                                <label for="email">Email</label>
+                                <input type="text" name="email" id="email" />
+                            </div>
+                            <div class="field">
+                                <label for="message">訊息</label>
+                                <textarea name="message" id="message" rows="5"></textarea>
+                            </div>
+                        </div>
+                        <ul class="actions">
+                            <li><a href="" class="button submit">送出訊息</a></li>
+                        </ul>
+                    </form>
+                </section>
+                <section>
+                    <ul class="contact">
+                        <li>
+                            <h3>地址</h3>
+                            <span>433台中市沙鹿區台灣大道七段200號<br />靜宜大學資料科學系</span>
+                        </li>
+                        <li>
+                            <h3>Email</h3>
+                            <a href="mailto:Abcd012@gmail.com">Abcd012@gmail.com</a>
+                        </li>
+                        <li>
+                            <h3>電話</h3>
+                            <span>(04) 2632-8001</span>
+                        </li>
+                        <li>
+                            <h3>社交媒體</h3>
+                            <ul class="icons">
+                                <li><a href="#" class="icon brands fa-line"><span class="label"></span></a></li>
+                                <li><a href="#" class="icon brands fa-instagram"><span class="label"></span></a></li>
+								<li><a href="#" class="icon brands fa-facebook"><span class="label"></span></a></li>
+								<li><a href="#" class="icon brands fa-twitter"><span class="label"></span></a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Footer -->
+<footer id="footer" class="wrapper style1-alt">
+    <div class="inner">
+        <ul class="menu">
+            <li><h4>&copy; 洪偉峻 版權所有</h4></li><li><h4>設計:</h4> <a href="http://html5up.net"><h4>HTML5 UP</h4></a></li>
+        </ul>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/jquery.scrollex.min.js"></script>
+<script src="assets/js/jquery.scrolly.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
